@@ -1,8 +1,6 @@
 var request 		= 	require('request')
   , db 					=		require('./db')
-	, translator 	= 	require('./translator')
-	, translator2 = 	require('xml2js').parseString
-	, translator3 =		require('jsonml-parse'); 
+	, htmlParser =		require('jsonml-parse'); 
 	
 module.exports = { }; 
 
@@ -29,19 +27,22 @@ module.exports.retrieveIfDoesNotExist = function(req,res,next) {
 	} else { 
 		request.get(req.query.url,function(err,resp,body){
 			if(err) return next(); 
-			console.log('body',body);
-			translator3(body,function(err,str){
+			htmlParser(body,function(err,str){
 				if(err) console.log("ERROR CONVERTING HTML TO JSON",err);
 				if(err) return next(); 
 				req.doc = str; 
-				db(function(connection){
-					connection.collection('docs',function(err,collection){
-						if(err) return next();
-						collection.insert({url: req.query.url, json: req.doc},function(err,doc){
-							next(); 
+				if(!req.query.nc) { 
+					db(function(connection){
+						connection.collection('docs',function(err,collection){
+							if(err) return next();
+							collection.insert({url: req.query.url, json: req.doc},function(err,doc){
+								next(); 
+							}); 
 						}); 
-					}); 
-				}); 	
+					}); 	
+				} else { 
+					next();
+				}
 			}); 
 		}); 
 	}
