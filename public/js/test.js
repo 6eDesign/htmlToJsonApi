@@ -1,6 +1,6 @@
 (function(w,d){
 	
-	var init = function() { 
+	var init = function() {
 		atomic.get('http://localhost:3003/api/html2json?nc=true&url=' + d.location.hash.substring(1)).success(buildDOM); 
 	}; 
 	
