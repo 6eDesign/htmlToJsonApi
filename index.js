@@ -33,6 +33,7 @@ app.get(config.root, html2json.checkIfExists, html2json.retrieveIfDoesNotExist, 
 app.get('/:pageName',function(req,res,next){
   res.render(req.params.pageName); 
 }); 
+
 app.server = http.createServer(app).listen(app.get('port'),function(){
   console.log("EXPRESS LISTENING ON PORT #" + app.get('port')); 
 });

@@ -11,7 +11,7 @@ module.exports = function(callback) {
     return;
   }
 
-  var db = new Db('haStats', new Server(process.env.MONGO_PORT_27017_TCP_ADDR || "127.0.0.1", process.env.MONGO_PORT_27017_TCP_PORT || 27017, { auto_reconnect: true }), {safe: true});
+  var db = new Db('html2json', new Server(process.env.MONGO_PORT_27017_TCP_ADDR || "127.0.0.1", process.env.MONGO_PORT_27017_TCP_PORT || 27017, { auto_reconnect: true }), {safe: true});
   db.open(function(error, databaseConnection) {
     if (error) throw new Error(error);
     connectionInstance = databaseConnection;

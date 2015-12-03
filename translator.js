@@ -62,7 +62,7 @@ module.exports.html2json = function(html) {
         inlineBuf.push('<' + tag + attributes + '>');
       } else {
         var buf = {}; // buffer for single tag
-        buf.tag = tag;
+        buf.type = tag;
         if (attrs.length !== 0) {
           var attr = {};
           for (var i = 0; i < attrs.length; i++) {
@@ -73,17 +73,17 @@ module.exports.html2json = function(html) {
             }
             attr[attr_name] = attr_value;
           }
-          buf['attr'] = attr;
+          buf['attributes'] = attr;
         }
         if (unary) {
           // if this tag don't has end tag
           // like <img src="hoge.png"/>
           // add last parents
           var last = bufArray.last();
-          if (!(last.child instanceof Array)) {
-            last.child = [];
+          if (!(last.contains instanceof Array)) {
+            last.contains = [];
           }
-          last.child.push(buf);
+          last.contains.push(buf);
         } else {
           bufArray.push(buf);
         }
@@ -97,8 +97,10 @@ module.exports.html2json = function(html) {
         var last = bufArray.last();
         inlineBuf.push('</' + tag + '>');
         // inlineBuf became '<inline>tag</inline>'
-        if (!last.text) last.text = '';
-        last.text += inlineBuf.join('');
+        if (!(last.contains instanceof Array)) {
+          last.contains = [];
+        }
+        last.contains.push(inlineBuf.join(''));
         // clear inlineBuf
         inlineBuf = [];
       } else {
@@ -108,10 +110,10 @@ module.exports.html2json = function(html) {
           return results = buf;
         }
         var last = bufArray.last();
-        if (!(last.child instanceof Array)) {
-          last.child = [];
+        if (!(last.contains instanceof Array)) {
+          last.contains = [];
         }
-        last.child.push(buf);
+        last.contains.push(buf);
       }
     },
     chars: function(text) {
@@ -124,10 +126,12 @@ module.exports.html2json = function(html) {
       } else {
         var last = bufArray.last();
         if (last) {
-          if (!last.text) {
-            last.text = '';
+          if(last.text != '') { 
+            if (!(last.contains instanceof Array)) {
+              last.contains = [];
+            }
+            last.contains.push(text);           
           }
-          last.text += text;
         }
       }
     },

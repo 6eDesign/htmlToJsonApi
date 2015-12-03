@@ -1,7 +1,11 @@
 div
-	h1 Hello World
+	h1(data-html='colors') Hello World
 	h2 Goodbye World
 	ul
 		li 1
 		li 2 
 		li 3
+ul(data-simplerepeat='something:somethings' data-simplebindattrs='style:somethingElse.something')
+	li(data-simplebind='something.thing')
+		a(data-simplebindattrs='href=something.url' data-simplebind='something.text')
+		span I live here.
