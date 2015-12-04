@@ -47,7 +47,7 @@ var util = (function(w,d,pub){
 		if(attrs) { 
 			for(var key in attrs) {
 				if(key == 'src' || key == 'href') { 
-					if(attrs[key].indexOf('.') == -1 || attrs[key].indexOf('.') > attrs[key].indexOf('/')) { 
+					if(attrs[key].indexOf('.') == -1 || attrs[key].indexOf('/') == 0) { 
 						attrs[key] = linkPrefix + attrs[key]; 
 					}					
 				}

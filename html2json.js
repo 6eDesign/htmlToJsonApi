@@ -1,6 +1,7 @@
 var request 				= 	require('request')
   , db 							=		require('./db')
-	, htmlParser 		=		require('json_ml') 
+	, htmlParser 			=		require('json_ml')
+	, xmlSanitize 		= 	require('illegal-xml-sanitizer') 
 	, htmlSanitize 		= 	require('sanitize-html');
 	
 module.exports = { }; 
@@ -33,7 +34,7 @@ module.exports.retrieveIfDoesNotExist = function(req,res,next) {
 			// 	if(err) console.log("ERROR CONVERTING HTML TO JSON",err);
 			// 	if(err) return next(); 
 			// 	req.doc = str;
-				req.doc = htmlParser.parse(htmlSanitize(body,{allowedTags: false, allowedAttributes: false})); 
+				req.doc = htmlParser.parse(htmlSanitize(xmlSanitize(body),{allowedTags: false, allowedAttributes: false})); 
 				if(!req.query.nc) { 
 					db(function(error,connection){
 						if(error) return next(); 
