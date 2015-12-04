@@ -12,12 +12,17 @@ var util = (function(w,d,pub){
 	var jsonmlProcessor = function(arr,base) {
 		var baseLevel = typeof base == 'undefined'; 
 		base = baseLevel ? d.createDocumentFragment() : base;  
-		var el = processInstruction(arr); 
-		if(el) base.appendChild(el);
-		// for(var i=0; i < arr.length; ++i) {
-		// 	var el = processInstruction(arr[i]); 
-		// 	if(el) base.appendChild(el);
-		// }
+
+		if(baseLevel) { 
+			for(var i=0; i < arr.length; ++i) {
+				var el = processInstruction(arr[i]); 
+				if(el) base.appendChild(el);
+			}
+		} else { 
+			var el = processInstruction(arr); 
+			if(el) base.appendChild(el);
+		}
+
 		return base; 
 	}; 
 	
@@ -30,8 +35,10 @@ var util = (function(w,d,pub){
 		}		
 	}; 
 	
-	var createElem = function(arr) { 
-		if(arr.length && typeof arr[0] == 'string' && arr[0].indexOf('#') != 0) {
+	var createElem = function(arr) {
+		var frag = d.createDocumentFragment(); 
+		console.log(arr.length, typeof arr[0], arr[0], arr);
+		if(arr.length && typeof arr[0] == 'string') { 
 			var el = d.createElement(arr.shift()); 
 			if(arr.length) { 
 				if(util.getType(arr[0]) == 'object') { 
@@ -41,9 +48,14 @@ var util = (function(w,d,pub){
 					}
 				}
 			} 
-			return jsonmlProcessor(arr,el);	
+			frag.appendChild(el); 
+			for(var i=0; i < arr.length; ++i) { 
+				frag.appendChild(jsonmlProcessor(arr[i],frag)); 
+			}
+			console.log("frag", frag);
+			return frag;	
 		} else { 
-			return jsonmlProcessor(arr); 			
+			return jsonmlProcessor(arr); 
 		}
 	}; 
 	

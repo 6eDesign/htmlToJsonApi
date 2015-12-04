@@ -1,6 +1,9 @@
-var request 		= 	require('request')
-  , db 					=		require('./db')
-	, htmlParser =		require('jsonml-parse'); 
+var request 				= 	require('request')
+  , db 							=		require('./db')
+	// , htmlParser 		=		require('jsonml-parse')
+	, htmlParser 		=		require('json_ml') 
+	// , htmlParser			=		require('jsonml')
+	, htmlSanitize 		= 	require('sanitize-html');
 	
 module.exports = { }; 
 
@@ -27,10 +30,11 @@ module.exports.retrieveIfDoesNotExist = function(req,res,next) {
 	} else { 
 		request.get(req.query.url,function(err,resp,body){
 			if(err) return next(); 
-			htmlParser(body,function(err,str){
-				if(err) console.log("ERROR CONVERTING HTML TO JSON",err);
-				if(err) return next(); 
-				req.doc = str; 
+			// htmlParser(body,function(err,str){
+			// 	if(err) console.log("ERROR CONVERTING HTML TO JSON",err);
+			// 	if(err) return next(); 
+			// 	req.doc = str;
+				req.doc = htmlParser.parse(htmlSanitize(body,{allowedTags: false, allowedAttributes: false})); 
 				if(!req.query.nc) { 
 					db(function(connection){
 						connection.collection('docs',function(err,collection){
@@ -43,7 +47,7 @@ module.exports.retrieveIfDoesNotExist = function(req,res,next) {
 				} else { 
 					next();
 				}
-			}); 
+			// }); 
 		}); 
 	}
 }; 
