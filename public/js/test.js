@@ -5,7 +5,7 @@
 	}; 
 	
 	var buildDOM = function(resp) { 
-		d.getElementById('target').appendChild(util.dom.create(resp));	
+		d.getElementById('target').appendChild(util.dom.create(resp,d.location.hash.substring(1)));	
 	}; 
 	
 	d.addEventListener('DOMContentLoaded',init); 

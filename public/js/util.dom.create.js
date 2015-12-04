@@ -9,22 +9,23 @@ var util = (function(w,d,pub){
 
 var util = (function(w,d,pub){
 	
-	var jsonmlProcessor = function(json,base) {
+	var jsonmlProcessor = function(json,linkPrefix,base) {
 		console.log('processing this json: ', json); 
+		linkPrefix = typeof linkPrefix == 'undefined' ? '' : linkPrefix;
 		base = typeof base == 'undefined' ? d.createDocumentFragment() : base; 
 		for(var i=0; i < json.length; ++i) { 
-			base.appendChild(createElementsFromJSONML(json[i])); 
+			base.appendChild(createElementsFromJSONML(json[i],linkPrefix)); 
 		}
 		return base; 		
 	}; 
 	
-	var createElementsFromJSONML = function(json) { 
+	var createElementsFromJSONML = function(json,linkPrefix) { 
 		if(util.getType(json) == 'array') { 
 			if(json.length && typeof json[0] == 'string') { 
-				var el = createEl(json.shift(), (json.length && util.getType(json[0]) == 'object') ? json.shift() : null);  
+				var el = createEl(json.shift(), (json.length && util.getType(json[0]) == 'object') ? json.shift() : null, linkPrefix);  
 				if(el) { 
 					for(var i=0; i < json.length; ++i) { 
-						el.appendChild(createElementsFromJSONML(json[i])); 
+						el.appendChild(createElementsFromJSONML(json[i],linkPrefix)); 
 					}
 					return el; 					
 				}
@@ -36,7 +37,7 @@ var util = (function(w,d,pub){
 		return d.createElement('div'); 
 	}; 
 	
-	var createEl = function(type,attrs) { 
+	var createEl = function(type,attrs,linkPrefix) { 
 		try { 
 			var el = d.createElement(type); 
 		} catch(error) { 
@@ -44,7 +45,12 @@ var util = (function(w,d,pub){
 			return null; 
 		}
 		if(attrs) { 
-			for(var key in attrs) { 
+			for(var key in attrs) {
+				if(key == 'src' || key == 'href') { 
+					if(attrs[key].indexOf('.') == -1 || attrs[key].indexOf('.') > attrs[key].indexOf('/')) { 
+						attrs[key] = linkPrefix + attrs[key]; 
+					}					
+				}
 				el.setAttribute(key,attrs[key]); 
 			}			
 		}
@@ -52,8 +58,8 @@ var util = (function(w,d,pub){
 	}; 
 	
 	pub.dom = pub.dom || { }; 
-	pub.dom.create = function(json) {
-		return jsonmlProcessor(json);  
+	pub.dom.create = function(json,linkPrefix) {
+		return jsonmlProcessor(json,linkPrefix);  
 	}; 
 	
 	return pub; 
