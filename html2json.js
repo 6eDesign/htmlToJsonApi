@@ -6,7 +6,8 @@ var request 				= 	require('request')
 module.exports = { }; 
 
 module.exports.checkIfExists = function(req,res,next) { 
-	db(function(connection){
+	db(function(error,connection){
+		if(error) return next(); 
 		connection.collection('docs',function(err,collection){
 			if(err) return next(); 
 			collection.findOne({url: req.query.url},function(err,doc){
@@ -34,7 +35,8 @@ module.exports.retrieveIfDoesNotExist = function(req,res,next) {
 			// 	req.doc = str;
 				req.doc = htmlParser.parse(htmlSanitize(body,{allowedTags: false, allowedAttributes: false})); 
 				if(!req.query.nc) { 
-					db(function(connection){
+					db(function(error,connection){
+						if(error) return next(); 
 						connection.collection('docs',function(err,collection){
 							if(err) return next();
 							collection.insert({url: req.query.url, json: req.doc},function(err,doc){
