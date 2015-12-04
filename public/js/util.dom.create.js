@@ -33,7 +33,8 @@ var util = (function(w,d,pub){
 		} else if(typeof json == 'string') { 
 			return d.createTextNode(json); 
 		} 
-		console.log("SHOULD NOT HAVE GOTTEN HERE"); 
+		
+		// SHOULD NOT HAVE GOTTEN HERE (happens if error caught in createEl from illegal node type)
 		return d.createElement('div'); 
 	}; 
 	
@@ -41,7 +42,7 @@ var util = (function(w,d,pub){
 		try { 
 			var el = d.createElement(type); 
 		} catch(error) { 
-			console.log("Error creating element of type: ", type); 
+			// Error creating element 
 			return null; 
 		}
 		if(attrs) { 
