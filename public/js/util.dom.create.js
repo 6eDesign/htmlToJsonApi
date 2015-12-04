@@ -13,9 +13,15 @@ var util = (function(w,d,pub){
 		console.log('processing this json: ', json); 
 		linkPrefix = typeof linkPrefix == 'undefined' ? '' : linkPrefix;
 		base = typeof base == 'undefined' ? d.createDocumentFragment() : base; 
-		for(var i=0; i < json.length; ++i) { 
-			base.appendChild(createElementsFromJSONML(json[i],linkPrefix)); 
-		}
+		base.appendChild(createElementsFromJSONML(json,linkPrefix));
+		// for(var i=0; i < json.length; ++i) { 
+		// 	base.appendChild(createElementsFromJSONML(json[i],linkPrefix)); 
+		// }
+		/* debug section: */
+		// var div = d.createElement('div'); 
+		// div.appendChild(base); 
+		// console.log(div.innerHTML); 
+		/* /debug section */
 		return base; 		
 	}; 
 	
@@ -48,7 +54,7 @@ var util = (function(w,d,pub){
 		if(attrs) { 
 			for(var key in attrs) {
 				if(key == 'src' || key == 'href') { 
-					if(attrs[key].indexOf('.') == -1 || attrs[key].indexOf('/') == 0) { 
+					if((attrs[key].indexOf('.') == -1 || attrs[key].indexOf('/') == 0) && attrs[key].indexOf('//') != 0) { 
 						attrs[key] = linkPrefix + attrs[key]; 
 					}					
 				}

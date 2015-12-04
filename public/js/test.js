@@ -5,7 +5,9 @@
 	}; 
 	
 	var buildDOM = function(resp) { 
-		d.getElementById('target').appendChild(util.dom.create(resp,d.location.hash.substring(1)));	
+		var newDOMFrag = util.dom.create(resp,d.location.hash.substring(1)); 
+		console.log(newDOMFrag); 
+		d.getElementById('target').appendChild(newDOMFrag);	
 	}; 
 	
 	d.addEventListener('DOMContentLoaded',init); 

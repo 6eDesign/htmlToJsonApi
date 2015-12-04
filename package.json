@@ -13,9 +13,11 @@
     "errorhandler": "^1.4.2",
     "express": "^4.13.3",
     "grunt": "^0.4.5",
+    "html-minifier": "^1.0.0",
     "jade": "^1.11.0",
     "jsonml-parse": "^1.0.0",
     "mongodb": "^2.0.49",
+    "remove-html-comments": "^1.0.2",
     "request": "^2.67.0",
     "sanitize-html": "^1.11.2"
   },

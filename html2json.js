@@ -3,6 +3,8 @@ var request 				= 	require('request')
 	// , htmlParser 			=		require('json_ml')
 	, htmlParser 			=		require('jsonml-parse')
 	, xmlSanitize 		= 	require('illegal-xml-sanitizer') 
+	, htmlCommentAxe 	=		require('remove-html-comments')
+	, htmlMinify 			= 	require('html-minifier').minify
 	, htmlSanitize 		= 	require('sanitize-html');
 	
 module.exports = { }; 
@@ -29,9 +31,20 @@ module.exports.retrieveIfDoesNotExist = function(req,res,next) {
 	if(req.doc) { 
 		next(); 
 	} else { 
-		request.get(req.query.url,function(err,resp,body){
+		request({
+			url: req.query.url, 
+			headers: {
+				'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.73 Safari/537.36'
+			}
+		},function(err,resp,body){
 			if(err) return next(); 
-			htmlParser(body,function(err,str){
+			var minified = htmlMinify(body,{
+				collapseWhitespace: true, 
+				minifyJS: true, 
+				minifyCSS: true
+			}); 
+			console.log('minified:',minified);
+			htmlParser(htmlSanitize(xmlSanitize(minified),{allowedTags: false, allowedAttributes: false}),function(err,str){
 				if(err) console.log("ERROR CONVERTING HTML TO JSON",err);
 				if(err) return next(); 
 				req.doc = str;
