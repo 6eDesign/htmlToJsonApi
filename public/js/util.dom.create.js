@@ -9,59 +9,44 @@ var util = (function(w,d,pub){
 
 var util = (function(w,d,pub){
 	
-	var jsonmlProcessor = function(arr,base) {
-		var baseLevel = typeof base == 'undefined'; 
-		base = baseLevel ? d.createDocumentFragment() : base;  
-
-		if(baseLevel) { 
-			for(var i=0; i < arr.length; ++i) {
-				var el = processInstruction(arr[i]); 
-				if(el) base.appendChild(el);
-			}
-		} else { 
-			var el = processInstruction(arr); 
-			if(el) base.appendChild(el);
+	var jsonmlProcessor = function(json,base) {
+		console.log('processing this json: ', json); 
+		base = typeof base == 'undefined' ? d.createDocumentFragment() : base; 
+		for(var i=0; i < json.length; ++i) { 
+			base.appendChild(createElementsFromJSONML(json[i])); 
 		}
-
-		return base; 
+		return base; 		
 	}; 
 	
-	var processInstruction = function(instruction) { 
-		if(util.getType(instruction) == 'array') { 
-			return createElem(instruction);
-		}
-		if(util.getType(instruction) == 'string') { 
-			return d.createTextNode(instruction); 
-		}		
-	}; 
-	
-	var createElem = function(arr) {
-		var frag = d.createDocumentFragment(); 
-		console.log(arr.length, typeof arr[0], arr[0], arr);
-		if(arr.length && typeof arr[0] == 'string') { 
-			var el = d.createElement(arr.shift()); 
-			if(arr.length) { 
-				if(util.getType(arr[0]) == 'object') { 
-					var attrs = arr.shift(); 
-					for(var key in attrs) { 
-						el.setAttribute(key,attrs[key]); 
-					}
+	var createElementsFromJSONML = function(json) { 
+		if(util.getType(json) == 'array') { 
+			if(json.length && typeof json[0] == 'string') { 
+				var el = createEl(json.shift(), (json.length && util.getType(json[0]) == 'object') ? json.shift() : null);  
+				for(var i=0; i < json.length; ++i) { 
+					el.appendChild(createElementsFromJSONML(json[i])); 
 				}
-			} 
-			frag.appendChild(el); 
-			for(var i=0; i < arr.length; ++i) { 
-				frag.appendChild(jsonmlProcessor(arr[i],frag)); 
+				return el; 
 			}
-			console.log("frag", frag);
-			return frag;	
-		} else { 
-			return jsonmlProcessor(arr); 
+		} else if(typeof json == 'string') { 
+			return d.createTextNode(json); 
+		} 
+		console.log("SHOULD NOT HAVE GOTTEN HERE"); 
+		return d.createTextNode(''); 
+	}; 
+	
+	var createEl = function(type,attrs) { 
+		var el = d.createElement(type); 
+		if(attrs) { 
+			for(var key in attrs) { 
+				el.setAttribute(key,attrs[key]); 
+			}			
 		}
+		return el; 
 	}; 
 	
 	pub.dom = pub.dom || { }; 
 	pub.dom.create = function(json) {
-		return jsonmlProcessor(json); 
+		return jsonmlProcessor(json);  
 	}; 
 	
 	return pub; 

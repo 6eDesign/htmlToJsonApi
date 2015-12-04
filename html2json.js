@@ -1,8 +1,6 @@
 var request 				= 	require('request')
   , db 							=		require('./db')
-	// , htmlParser 		=		require('jsonml-parse')
 	, htmlParser 		=		require('json_ml') 
-	// , htmlParser			=		require('jsonml')
 	, htmlSanitize 		= 	require('sanitize-html');
 	
 module.exports = { }; 
