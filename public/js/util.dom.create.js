@@ -12,11 +12,14 @@ var util = (function(w,d,pub){
 	var jsonmlProcessor = function(json,linkPrefix,base) {
 		console.log('processing this json: ', json); 
 		linkPrefix = typeof linkPrefix == 'undefined' ? '' : linkPrefix;
-		base = typeof base == 'undefined' ? d.createDocumentFragment() : base; 
-		base.appendChild(createElementsFromJSONML(json,linkPrefix));
-		// for(var i=0; i < json.length; ++i) { 
-		// 	base.appendChild(createElementsFromJSONML(json[i],linkPrefix)); 
-		// }
+		base = typeof base == 'undefined' ? d.createDocumentFragment() : base;
+		if(!allArrayMembersAreArrays(json)) { 
+			base.appendChild(createElementsFromJSONML(json,linkPrefix));
+		} else { 
+			for(var i=0; i < json.length; ++i) { 
+				base.appendChild(createElementsFromJSONML(json[i],linkPrefix)); 
+			}			
+		}
 		/* debug section: */
 		// var div = d.createElement('div'); 
 		// div.appendChild(base); 
@@ -24,6 +27,17 @@ var util = (function(w,d,pub){
 		/* /debug section */
 		return base; 		
 	}; 
+	
+	var allArrayMembersAreArrays = function(arr) { 
+		var val = true; 
+		for(var i=0; i < arr.length; ++i) { 
+			if(util.getType(arr[i]) != 'array') { 
+				val = false; 
+				break; 
+			} 
+		}
+		return val; 
+	}
 	
 	var createElementsFromJSONML = function(json,linkPrefix) { 
 		if(util.getType(json) == 'array') { 
@@ -49,6 +63,7 @@ var util = (function(w,d,pub){
 			var el = d.createElement(type); 
 		} catch(error) { 
 			// Error creating element 
+			console.log("BROKEN ON TYPE: ", type);
 			return null; 
 		}
 		if(attrs) { 
