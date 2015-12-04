@@ -22,20 +22,27 @@ var util = (function(w,d,pub){
 		if(util.getType(json) == 'array') { 
 			if(json.length && typeof json[0] == 'string') { 
 				var el = createEl(json.shift(), (json.length && util.getType(json[0]) == 'object') ? json.shift() : null);  
-				for(var i=0; i < json.length; ++i) { 
-					el.appendChild(createElementsFromJSONML(json[i])); 
+				if(el) { 
+					for(var i=0; i < json.length; ++i) { 
+						el.appendChild(createElementsFromJSONML(json[i])); 
+					}
+					return el; 					
 				}
-				return el; 
 			}
 		} else if(typeof json == 'string') { 
 			return d.createTextNode(json); 
 		} 
 		console.log("SHOULD NOT HAVE GOTTEN HERE"); 
-		return d.createTextNode(''); 
+		return d.createElement('div'); 
 	}; 
 	
 	var createEl = function(type,attrs) { 
-		var el = d.createElement(type); 
+		try { 
+			var el = d.createElement(type); 
+		} catch(error) { 
+			console.log("Error creating element of type: ", type); 
+			return null; 
+		}
 		if(attrs) { 
 			for(var key in attrs) { 
 				el.setAttribute(key,attrs[key]); 
