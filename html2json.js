@@ -37,33 +37,36 @@ module.exports.retrieveIfDoesNotExist = function(req,res,next) {
 				'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.73 Safari/537.36'
 			}
 		},function(err,resp,body){
-			if(err) return next(); 
-			var minified = htmlMinify(body,{
-				collapseWhitespace: true, 
-				minifyJS: true, 
-				minifyCSS: true
-			}); 
-			htmlParser(htmlSanitize(xmlSanitize(minified),{allowedTags: false, allowedAttributes: false}),function(err,str){
-				if(err) console.log("ERROR CONVERTING HTML TO JSON",err);
-				if(err) return next(); 
-				req.doc = str;
-				// req.doc = htmlParser.parse(htmlSanitize(xmlSanitize(body),{allowedTags: false, allowedAttributes: false})); 
-				console.log(!req.query.nc);
-				if(!req.query.nc) { 
-					db(function(error,connection){
-						console.log('error',error);
-						if(error) return next(); 
-						connection.collection('docs',function(err,collection){
-							if(err) return next();
-							collection.insert({url: req.query.url, json: req.doc},function(err,doc){
-								next(); 
+			if(err) { 
+				res.status(500).send({ error: 'Something failed!' });
+			} else { 
+				var minified = htmlMinify(body,{
+					collapseWhitespace: true, 
+					minifyJS: true, 
+					minifyCSS: true
+				}); 
+				htmlParser(htmlSanitize(xmlSanitize(minified),{allowedTags: false, allowedAttributes: false}),function(err,str){
+					if(err) console.log("ERROR CONVERTING HTML TO JSON",err);
+					if(err) return next(); 
+					req.doc = str;
+					// req.doc = htmlParser.parse(htmlSanitize(xmlSanitize(body),{allowedTags: false, allowedAttributes: false})); 
+					console.log(!req.query.nc);
+					if(!req.query.nc) { 
+						db(function(error,connection){
+							console.log('error',error);
+							if(error) return next(); 
+							connection.collection('docs',function(err,collection){
+								if(err) return next();
+								collection.insert({url: req.query.url, json: req.doc},function(err,doc){
+									next(); 
+								}); 
 							}); 
-						}); 
-					}); 	
-				} else { 
-					next();
-				}
-			}); 
+						}); 	
+					} else { 
+						next();
+					}
+				});
+			} 
 		}); 
 	}
 }; 
