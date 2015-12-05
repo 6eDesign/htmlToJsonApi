@@ -13,7 +13,10 @@ module.exports = function(callback) {
 
   var db = new Db('html2json', new Server(process.env.MONGO_PORT_27017_TCP_ADDR || "127.0.0.1", process.env.MONGO_PORT_27017_TCP_PORT || 27017, { auto_reconnect: true }), {safe: true});
   db.open(function(error, databaseConnection) {
-    if(error) return callback(error,null); 
+    if(error) {
+      callback(error,null);
+      return;  
+    } 
     connectionInstance = databaseConnection;
     callback(null,databaseConnection);
   });

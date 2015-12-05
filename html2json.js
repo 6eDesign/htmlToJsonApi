@@ -43,14 +43,15 @@ module.exports.retrieveIfDoesNotExist = function(req,res,next) {
 				minifyJS: true, 
 				minifyCSS: true
 			}); 
-			console.log('minified:',minified);
 			htmlParser(htmlSanitize(xmlSanitize(minified),{allowedTags: false, allowedAttributes: false}),function(err,str){
 				if(err) console.log("ERROR CONVERTING HTML TO JSON",err);
 				if(err) return next(); 
 				req.doc = str;
 				// req.doc = htmlParser.parse(htmlSanitize(xmlSanitize(body),{allowedTags: false, allowedAttributes: false})); 
+				console.log(!req.query.nc);
 				if(!req.query.nc) { 
 					db(function(error,connection){
+						console.log('error',error);
 						if(error) return next(); 
 						connection.collection('docs',function(err,collection){
 							if(err) return next();

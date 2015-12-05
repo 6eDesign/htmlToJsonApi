@@ -8,9 +8,11 @@
 	var buildDOM = function(resp) { 
 		var startTime = new Date().getTime(); 
 		var newDOMFrag = util.dom.create(resp,d.location.hash.substring(1)); 
-		d.getElementById('target').appendChild(newDOMFrag);
+		var div = document.createElement('div'); 
+		div.appendChild(newDOMFrag); 
+		d.getElementById('target').innerHTML = div.innerHTML;
 		var now = new Date().getTime(); 
-		console.log("target.appendChild() TOOK " + (now - startTime) + " MILLISECONDS TO COMPLETE");
+		console.log("target.innerHTML TOOK " + (now - startTime) + " MILLISECONDS TO COMPLETE");
 		console.log("ENTIRE TRANSACTION TOOK " + (now - initStartTime) + " MILLISECONDS TO COMPLETE"); 	
 	}; 
 	
